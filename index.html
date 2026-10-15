@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Zdrowiomierz – twój towarzysz w zmianie sylwetki</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f4f7ec;--ink:#1d2b20;--mut:#5d6c5f;--line:#dde5d0;--card:#fff;--green:#2e7d3f;--green2:#5a9f3a;
+--s1:#c0392b;--s5:#e0a526;--s9:#2f8f4e;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#121a14;--ink:#eaf2e6;--mut:#9bb09d;--line:#27372b;--card:#1a261d;--green:#2f8a44;--green2:#4f9338}}
+:root[data-theme="dark"]{--bg:#121a14;--ink:#eaf2e6;--mut:#9bb09d;--line:#27372b;--card:#1a261d;--green:#2f8a44;--green2:#4f9338}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Bricolage Grotesque",system-ui,-apple-system,"Segoe UI",sans-serif;line-height:1.5}
+main{max-width:860px;margin:0 auto;padding:28px 18px 60px}
+h1{font-size:clamp(1.9rem,6vw,3rem);line-height:1.05;margin:0 0 10px;font-weight:800;letter-spacing:-.02em}
+.tag{font-size:1.15rem;font-weight:600;margin:0 0 14px}
+.lead{color:var(--mut);max-width:60ch;margin:0 0 22px}
+.tools{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:14px}
+input,select{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:8px;padding:9px 12px}
+input{flex:1 1 200px}
+input:focus-visible,select:focus-visible,button:focus-visible{outline:3px solid var(--s9);outline-offset:2px}
+.tabs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:18px}
+.tabs button{font:inherit;font-size:.9rem;cursor:pointer;color:var(--ink);background:transparent;border:1px solid var(--line);border-radius:999px;padding:6px 14px}
+.tabs button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.scale{display:flex;align-items:center;gap:10px;font-size:.8rem;color:var(--mut);margin-bottom:22px}
+.scale i{flex:1;height:8px;border-radius:4px;background:linear-gradient(90deg,var(--s1),var(--s5),var(--s9))}
+section{margin-bottom:26px}
+h2{font-size:1.25rem;margin:0 0 6px;padding-bottom:6px;border-bottom:2px solid var(--ink);display:flex;justify-content:space-between;align-items:baseline}
+h2 small{font-weight:400;font-size:.85rem;color:var(--mut)}
+.row{display:grid;grid-template-columns:minmax(120px,200px) 1fr 44px;gap:6px 14px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line)}
+.name{font-weight:600}
+.bar{height:12px;background:var(--line);border-radius:6px;overflow:hidden}
+.bar b{display:block;height:100%;border-radius:6px;transition:width .5s}
+.score{font-weight:800;font-size:1.2rem;text-align:right}
+.note{grid-column:1/-1;color:var(--mut);font-size:.88rem;margin-top:-2px}
+.sub{grid-column:1/-1;font-size:.88rem;border-left:4px solid var(--s9);padding:4px 10px;background:color-mix(in srgb,var(--s9) 10%,transparent);border-radius:0 6px 6px 0}
+.diet h2{margin-bottom:10px}
+.diet .bar{margin-bottom:10px}
+.dopis{margin:0 0 8px}
+.diet dl{display:grid;grid-template-columns:90px 1fr;gap:6px 14px;margin:0;font-size:.92rem}
+.diet dt{font-weight:600}
+.diet dd{margin:0;color:var(--mut)}
+@media(max-width:520px){.diet dl{grid-template-columns:1fr;gap:0}.diet dd{margin-bottom:8px}}
+.kc{display:block;font-weight:400;font-size:.78rem;color:var(--mut)}
+.mode{display:flex;gap:4px;margin-bottom:18px;border-bottom:2px solid var(--line)}
+.mode button{font:inherit;font-weight:800;font-size:1.1rem;background:none;border:0;border-bottom:4px solid transparent;margin-bottom:-2px;padding:8px 16px;color:var(--mut);cursor:pointer}
+.mode button[aria-pressed="true"]{color:var(--ink);border-bottom-color:var(--s9)}
+.bf{display:flex;flex-wrap:wrap;gap:14px;margin:10px 0 16px}
+.bf label{display:flex;flex-direction:column;gap:4px;font-weight:600;flex:1 1 160px}
+.bres{display:flex;align-items:center;gap:18px;min-height:64px;margin-bottom:14px}
+.bnum{font-size:3rem;font-weight:800;line-height:1}
+.bscale{position:relative;margin:26px 0 18px}
+.bscale i{display:block;height:14px;border-radius:7px;background:linear-gradient(90deg,#3b82c4 0 14%,#2f8f4e 14% 40%,#e0a526 40% 60%,#e07a26 60% 80%,#c0392b 80% 100%)}
+.bscale b{position:absolute;top:-8px;width:6px;height:30px;margin-left:-3px;border-radius:3px;background:var(--ink);border:2px solid var(--bg);transition:left .3s}
+.bt{border-collapse:collapse;font-size:.92rem;margin-bottom:12px}
+.bt td{padding:4px 18px 4px 0}
+.dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:8px}
+.bnote{font-size:.9rem;color:var(--mut);max-width:70ch}
+@media(prefers-reduced-motion:reduce){.bscale b{transition:none}}
+@media(max-width:520px){.mode button{padding:8px 8px;font-size:.95rem}}
+input.bad{border-color:#c0392b;color:#c0392b;font-weight:600;background:color-mix(in srgb,#c0392b 14%,var(--card));box-shadow:0 0 0 2px #c0392b}
+.badmsg{color:#c0392b;font-weight:600}
+.mh{font-size:1.05rem;margin:14px 0 4px}
+.mbar{display:flex;height:14px;border-radius:7px;overflow:hidden;margin:8px 0 10px}
+.mbar span{display:block;height:100%}
+.mode{overflow-x:auto}
+.mode button{white-space:nowrap}
+.btn{font:inherit;font-weight:600;cursor:pointer;color:var(--bg);background:var(--ink);border:0;border-radius:8px;padding:10px 18px;margin:0 8px 10px 0}
+.bf label.chk{flex-direction:row;align-items:center;font-weight:400;flex:0 0 auto;gap:6px}
+.chk input{flex:none;width:18px;height:18px;padding:0}
+.meal{padding:8px 0;border-bottom:1px solid var(--line)}
+.mh2{display:flex;justify-content:space-between;gap:10px}
+.mk{font-weight:600;white-space:nowrap}
+.ing{color:var(--mut);font-size:.88rem}
+.day{margin-bottom:20px}
+@media print{.mode,.tools,.scale,#tabs,.noprint,footer,.lead,.tag{display:none!important}*{color:#000!important;background:transparent!important}.day{break-inside:avoid}}
+h2{flex-wrap:wrap;gap:4px 12px}
+details{margin-top:4px;font-size:.9rem}
+summary{cursor:pointer;font-weight:600;color:var(--s9)}
+details ol{margin:6px 0 4px;padding-left:20px}
+.row{cursor:pointer}
+.mac{display:none}
+.row.open .mac{display:block;margin-top:2px;color:var(--ink)}
+.meal.hasm{cursor:pointer}
+.meal.open .mac{display:block;color:var(--ink)}
+.mw,.mf,.mc{display:inline-block;background:#26332c;border-radius:999px;padding:1px 9px;margin:2px 6px 2px 0;font-weight:600;white-space:nowrap}
+.mw{color:#fff}
+.mf{color:#f5c542}
+.mc{color:#5aaaf5}
+.mbar{box-shadow:0 0 0 1px var(--line)}
+.empty{color:var(--mut);padding:20px 0}
+footer{color:var(--mut);font-size:.85rem;border-top:1px solid var(--line);padding-top:14px;max-width:70ch}
+@media(max-width:520px){.row{grid-template-columns:1fr 40px}.bar{grid-column:1/-1;grid-row:2}.note{grid-row:3}}
+@media(prefers-reduced-motion:reduce){.bar b{transition:none}}
+/* motyw dietetyczny */
+body{font-family:"Nunito",system-ui,-apple-system,"Segoe UI",sans-serif}
+h1,h2{font-family:"Fraunces",Georgia,"Times New Roman",serif}
+.hero{position:relative;overflow:hidden;background:linear-gradient(135deg,var(--green),var(--green2));color:#fff;border-radius:26px;padding:28px 24px 22px;margin-bottom:20px}
+.hero h1{color:#fff;margin:0 0 6px;font-size:clamp(2.2rem,7vw,3.4rem)}
+.hero .tag{color:rgba(255,255,255,.94);margin:0 0 14px}
+.hero .fruits{font-size:1.9rem;letter-spacing:.4rem;filter:drop-shadow(0 2px 2px rgba(0,0,0,.18))}
+.mode{background:var(--card);border:1px solid var(--line);border-radius:999px;padding:5px;gap:4px;margin-bottom:16px}
+.mode button{border:0;margin:0;border-radius:999px;padding:9px 16px;color:var(--mut);font-weight:700}
+.mode button[aria-pressed="true"]{background:var(--green);color:#fff}
+.tabs button{border-radius:999px;border:1.5px solid var(--line);background:var(--card);font-weight:600}
+.tabs button[aria-pressed="true"]{background:var(--green);border-color:var(--green);color:#fff}
+input,select{border-radius:12px;border:1.5px solid var(--line);padding:10px 14px}
+section{background:var(--card);border-radius:20px;padding:16px 18px 8px;margin-bottom:16px;box-shadow:0 1px 3px rgba(30,70,30,.08)}
+section h2{border-bottom:2px solid var(--line);color:var(--ink)}
+h2 small{background:var(--bg);border-radius:999px;padding:2px 10px;font-weight:700;color:var(--mut)}
+.row:last-child{border-bottom:0}
+.bar{height:10px;border-radius:5px}
+.score{width:40px;height:40px;border:3px solid;border-radius:50%;display:grid;place-items:center;font-size:1.05rem;font-weight:800;color:var(--ink);justify-self:end}
+.sub{border-left-color:var(--green)}
+footer{background:var(--card);border-radius:16px;padding:14px 18px;border-top:0;box-shadow:0 1px 3px rgba(30,70,30,.08)}
+.scale i{height:10px}
+@media(max-width:520px){.hero{padding:22px 18px 18px;border-radius:22px}.mode button{padding:8px 10px}}
+</style>
+</head>
+<body>
+<main>
+<header class="hero"><h1>Zdrowiomierz</h1>
+<p class="tag">Twój towarzysz w zmianie sylwetki</p><div class="fruits" aria-hidden="true">🥦🍎🥕🍋🫐🥑</div></header>
+<p class="lead">Podstawowe produkty spożywcze w kategoriach, z oceną zdrowotności od 1 do 10. Wyszukaj produkt, wybierz kategorię albo posortuj od najzdrowszych. Osobne zakładki: „Diety” opisują najbardziej znane diety, „BMI” to kalkulator masy ciała, a „Kalorie” liczą dzienne zapotrzebowanie.</p>
+<nav class="mode" id="mode" aria-label="Widok"></nav>
+<div class="tools">
+<input id="q" type="search" placeholder="Szukaj produktu, np. chleb" aria-label="Szukaj produktu">
+<select id="sort" aria-label="Sortowanie">
+<option value="cat">Sortuj: według kategorii</option>
+<option value="desc">Od najzdrowszych</option>
+<option value="asc">Od najmniej zdrowych</option>
+</select>
+<p class="bnote" style="flex-basis:100%;margin:0">Kliknij produkt, aby zobaczyć białko, tłuszcze i węglowodany na 100 g.</p>
+</div>
+<div class="tabs" id="tabs" role="group" aria-label="Kategorie"></div>
+<div class="scale"><span>1 – unikaj</span><i></i><span>10 – jedz często</span></div>
+<div id="list"></div>
+<footer>Kalorie, białko, tłuszcze i węglowodany podano orientacyjnie na 100 g produktu (z typowych tabel, a część węglowodanów w owocach i warzywach może obejmować błonnik): mięso i ryby surowe, kasze, ryż, makarony i strączkowe suche (po ugotowaniu mają ok. 3 razy mniej), ziemniaki gotowane, napoje na 100 ml. Wartości zależą od odmiany i przygotowania. Oceny są uproszczone i dotyczą przeciętnej, nieprzetworzonej wersji produktu w rozsądnej porcji. Uwzględniają m.in. błonnik, witaminy, tłuszcze nasycone, cukier, sól i stopień przetworzenia. To nie jest porada dietetyczna. Przy chorobach lub alergiach skonsultuj się z dietetykiem.</footer>
+</main>
+<script>
+var D=[
+["Warzywa","Brokuł",10,"Dużo witaminy C i K, błonnik, mało kalorii."],
+["Warzywa","Szpinak",10,"Żelazo, folian, magnez. Najlepszy na surowo lub krótko gotowany."],
+["Warzywa","Burak",9,"Azotany wspierają ciśnienie krwi, dużo folianów."],
+["Warzywa","Kapusta (w tym kiszona)",9,"Błonnik i witamina C. Kiszona dodatkowo probiotyki, ale jest słona."],
+["Warzywa","Marchew",9,"Beta-karoten, błonnik. Lepiej przyswajalna po lekkim ugotowaniu."],
+["Warzywa","Pomidor",9,"Likopen, potas, witamina C."],
+["Warzywa","Papryka",9,"Rekordowo dużo witaminy C."],
+["Warzywa","Cebula",8,"Związki siarki i flawonoidy, wspiera układ krążenia."],
+["Warzywa","Ogórek",8,"Prawie sama woda, mało kalorii, ale też mniej składników odżywczych."],
+["Warzywa","Ziemniak (gotowany)",6,"Potas i witamina C, ale wysoki indeks glikemiczny. Frytki to osobna historia."],
+["Owoce","Jagody",10,"Antocyjany, błonnik, niski indeks glikemiczny."],
+["Owoce","Truskawki",9,"Dużo witaminy C, mało cukru jak na owoc."],
+["Owoce","Jabłko",9,"Błonnik (pektyny), je się ze skórką."],
+["Owoce","Pomarańcza",9,"Witamina C i folian. Lepsza cała niż w soku."],
+["Owoce","Awokado",8,"Zdrowe tłuszcze jednonienasycone, potas. Kaloryczne."],
+["Owoce","Banan",7,"Potas i energia, ale sporo cukru."],
+["Owoce","Winogrona",6,"Polifenole, ale łatwo zjeść dużo cukru."],
+["Owoce","Suszone owoce",5,"Błonnik, ale skoncentrowany cukier. Garść, nie paczka."],
+["Pieczywo","Chleb żytni razowy",9,"Dużo błonnika, niższy indeks glikemiczny, długo syci."],
+["Pieczywo","Chleb pełnoziarnisty",8,"Błonnik i witaminy z grupy B. Sprawdź skład, czy to prawdziwa mąka pełnoziarnista."],
+["Pieczywo","Bułka grahamka",7,"Lepsza niż pszenna, ale zwykle mniej błonnika niż chleb razowy."],
+["Pieczywo","Chleb pszenny jasny",4,"Mało błonnika, szybko podnosi cukier."],
+["Pieczywo","Bułka paryska",3,"Biała mąka, niska wartość odżywcza."],
+["Pieczywo","Tost biały",3,"Często z dodatkiem cukru i konserwantów."],
+["Nabiał","Kefir",9,"Probiotyki, białko, wapń."],
+["Nabiał","Jogurt naturalny",8,"Białko, wapń, bakterie fermentacji mlekowej. Bez cukru."],
+["Nabiał","Twaróg",8,"Dużo białka, mało tłuszczu w wersji chudej."],
+["Nabiał","Mleko",7,"Wapń i białko. Dobre, jeśli tolerujesz laktozę."],
+["Nabiał","Ser żółty",5,"Białko i wapń, ale dużo soli i tłuszczów nasyconych."],
+["Nabiał","Jogurt owocowy słodzony",4,"Często kilka łyżeczek cukru w kubku."],
+["Mięso, ryby i jaja","Łosoś",9,"Kwasy omega-3, białko, witamina D."],
+["Mięso, ryby i jaja","Śledź",9,"Omega-3, witamina D, tani. Marynowany bywa słony."],
+["Mięso, ryby i jaja","Jajka",8,"Pełnowartościowe białko, choliny, witamina D."],
+["Mięso, ryby i jaja","Pierś z kurczaka",8,"Chude białko. Bez panierki i smażenia w głębokim tłuszczu."],
+["Mięso, ryby i jaja","Wołowina (chuda)",6,"Żelazo i B12, ale mięso czerwone najlepiej ograniczać."],
+["Mięso, ryby i jaja","Wieprzowina",5,"Więcej tłuszczów nasyconych, zależy od elementu."],
+["Mięso, ryby i jaja","Parówki i kiełbasa",2,"Przetworzone mięso: dużo soli, konserwanty, ryzyko dla zdrowia przy częstym jedzeniu."],
+["Mięso, ryby i jaja","Boczek",2,"Przetworzone, tłuste i słone."],
+["Zboża i makarony","Płatki owsiane",9,"Beta-glukan obniża cholesterol, dużo błonnika."],
+["Zboża i makarony","Kasza gryczana",9,"Białko roślinne, magnez, bez glutenu."],
+["Zboża i makarony","Brązowy ryż",8,"Więcej błonnika i magnezu niż biały."],
+["Zboża i makarony","Makaron razowy",7,"Więcej błonnika niż zwykły, lepiej syci."],
+["Zboża i makarony","Biały ryż",5,"Szybko podnosi cukier, mało błonnika."],
+["Zboża i makarony","Makaron pszenny",5,"Neutralny, ale bez wielkiej wartości odżywczej."],
+["Zboża i makarony","Płatki kukurydziane słodzone",3,"Dużo cukru, mało błonnika."],
+["Strączkowe, orzechy i nasiona","Soczewica",10,"Białko, błonnik, żelazo, tanie."],
+["Strączkowe, orzechy i nasiona","Ciecierzyca",9,"Białko roślinne i błonnik."],
+["Strączkowe, orzechy i nasiona","Fasola",9,"Błonnik, białko, potas."],
+["Strączkowe, orzechy i nasiona","Orzechy włoskie",9,"Omega-3 roślinne. Kaloryczne, garść dziennie wystarczy."],
+["Strączkowe, orzechy i nasiona","Migdały",9,"Witamina E, magnez, zdrowe tłuszcze."],
+["Strączkowe, orzechy i nasiona","Nasiona chia",9,"Błonnik i omega-3 (ALA)."],
+["Strączkowe, orzechy i nasiona","Orzeszki solone",5,"Orzechy są zdrowe, sól i smażenie już nie."],
+["Tłuszcze","Oliwa z oliwek extra virgin",9,"Tłuszcze jednonienasycone i polifenole."],
+["Tłuszcze","Olej rzepakowy",8,"Dobry stosunek omega-3 do omega-6, dobry do smażenia."],
+["Tłuszcze","Masło",4,"Dużo tłuszczów nasyconych. W małych ilościach ok."],
+["Tłuszcze","Smalec",3,"Prawie same tłuszcze nasycone."],
+["Słodycze i przekąski","Gorzka czekolada (70%+)",6,"Flawonoidy i magnez, ale kaloryczna. Kilka kostek."],
+["Słodycze i przekąski","Czekolada mleczna",3,"Dużo cukru, mało kakao."],
+["Słodycze i przekąski","Ciastka",2,"Cukier, tłuszcze utwardzone lub nasycone."],
+["Słodycze i przekąski","Chipsy",2,"Dużo soli i tłuszczu, akrylamid."],
+["Słodycze i przekąski","Cukierki",1,"Czysty cukier, zero wartości odżywczej."],
+["Napoje","Woda",10,"Nic lepszego do nawodnienia."],
+["Napoje","Zielona herbata",9,"Polifenole (katechiny), bez cukru."],
+["Napoje","Kawa czarna",7,"Antyoksydanty. Umiar: 3 do 4 filiżanek dziennie."],
+["Napoje","Sok owocowy",4,"Cukier bez błonnika, szybki skok glukozy."],
+["Napoje","Cola i napoje słodzone",1,"Kilka łyżeczek cukru w szklance, dużo pustych kalorii."],
+["Warzywa", "Batat (gotowany)", 8, "Beta-karoten, błonnik, niższy indeks glikemiczny niż ziemniak."],
+["Warzywa", "Kalafior", 9, "Witamina C i K, mało kalorii, świetny zamiennik ziemniaków lub ryżu."],
+["Warzywa", "Cukinia", 8, "Bardzo mało kalorii, łagodna, dobra do dań z patelni."],
+["Warzywa", "Sałata", 8, "Mało kalorii i dużo wody, wartość odżywcza zależy od rodzaju."],
+["Warzywa", "Pieczarki", 8, "Mało kalorii, witaminy z grupy B, trochę białka."],
+["Warzywa", "Brukselka", 9, "Witamina C i K, błonnik, związki wspierające zdrowie."],
+["Warzywa", "Kukurydza (gotowana)", 6, "Błonnik i antyoksydanty, ale sporo skrobi i cukru."],
+["Owoce", "Maliny", 10, "Jeden z najlepszych owoców: dużo błonnika, mało cukru."],
+["Owoce", "Kiwi", 9, "Dużo witaminy C, błonnik, wspiera trawienie."],
+["Owoce", "Grejpfrut", 9, "Witamina C, mało cukru. Uwaga: wpływa na działanie niektórych leków."],
+["Owoce", "Gruszka", 8, "Błonnik i witamina C, je się ze skórką."],
+["Owoce", "Mango", 7, "Witaminy A i C, ale dość dużo cukru."],
+["Owoce", "Arbuz", 7, "Prawie sama woda, mało kalorii, ale ma wysoki indeks glikemiczny."],
+["Owoce", "Daktyle", 5, "Błonnik i potas, ale bardzo dużo cukru. Jedna do dwóch sztuk."],
+["Pieczywo", "Pumpernikiel", 8, "Ciemny chleb żytni pełnoziarnisty, dużo błonnika, długo syci."],
+["Pieczywo", "Pieczywo chrupkie żytnie", 7, "Błonnik i mało tłuszczu. Sprawdź skład, czy nie zawiera dużo soli."],
+["Pieczywo", "Tortilla pełnoziarnista", 6, "Lepsza niż pszenna, ale często z dodatkami i solą."],
+["Pieczywo", "Bagietka", 4, "Biała mąka, mało błonnika, szybko podnosi cukier."],
+["Pieczywo", "Wafle ryżowe", 4, "Wysoki indeks glikemiczny, mało błonnika, słabo syci."],
+["Pieczywo", "Croissant", 3, "Dużo masła i białej mąki, kaloryczny i tłusty."],
+["Nabiał", "Skyr", 9, "Bardzo dużo białka, mało tłuszczu, bez cukru w wersji naturalnej."],
+["Nabiał", "Serek wiejski", 8, "Dużo białka, mało kalorii, dobry na kolację."],
+["Nabiał", "Maślanka", 8, "Lekka, z probiotykami, mało kalorii."],
+["Nabiał", "Jogurt grecki", 7, "Więcej białka niż zwykły jogurt, ale i więcej tłuszczu."],
+["Nabiał", "Feta", 6, "Białko i wapń, ale bardzo słona."],
+["Nabiał", "Śmietana 18%", 4, "Dużo tłuszczów nasyconych, mało składników odżywczych."],
+["Nabiał", "Ser topiony", 3, "Mocno przetworzony, dużo soli i dodatków."],
+["Mięso, ryby i jaja", "Tuńczyk w wodzie", 8, "Dużo białka, mało tłuszczu. Jedz z umiarem ze względu na rtęć."],
+["Mięso, ryby i jaja", "Dorsz", 8, "Chude białko, mało kalorii, jod."],
+["Mięso, ryby i jaja", "Makrela", 8, "Omega-3 i witamina D. Wędzona jest bardzo słona."],
+["Mięso, ryby i jaja", "Sardynki", 9, "Omega-3, wapń (z ości), witamina D, tanie i dostępne."],
+["Mięso, ryby i jaja", "Pierś z indyka", 8, "Chude białko, mało tłuszczu."],
+["Mięso, ryby i jaja", "Krewetki", 7, "Dużo białka, mało kalorii, jod. Mają sporo cholesterolu."],
+["Mięso, ryby i jaja", "Szynka (wędlina)", 4, "Przetworzone mięso, sól i konserwanty, jakość zależy od składu."],
+["Mięso, ryby i jaja", "Mięso mielone wieprzowo-wołowe", 4, "Zwykle tłuste, dużo tłuszczów nasyconych."],
+["Mięso, ryby i jaja", "Pasztet", 3, "Tłusty, słony, często z dodatkami i konserwantami."],
+["Mięso, ryby i jaja", "Paluszki rybne", 3, "Panierka i smażenie, mało ryby, dużo tłuszczu."],
+["Zboża i makarony", "Kasza jaglana", 8, "Bez glutenu, magnez, łagodna w smaku."],
+["Zboża i makarony", "Kasza jęczmienna", 8, "Dużo błonnika (beta-glukan), niski indeks glikemiczny."],
+["Zboża i makarony", "Quinoa", 8, "Białko roślinne z pełnym zestawem aminokwasów, bez glutenu."],
+["Zboża i makarony", "Musli bez cukru", 7, "Błonnik i orzechy, ale kaloryczne. Czytaj skład."],
+["Zboża i makarony", "Ryż basmati", 6, "Niższy indeks glikemiczny niż zwykły biały ryż."],
+["Zboża i makarony", "Kasza manna", 4, "Mało błonnika, mocno rozdrobniona, szybko podnosi cukier."],
+["Zboża i makarony", "Granola słodzona", 4, "Sporo cukru i tłuszczu, zwykle dużo kalorii."],
+["Strączkowe, orzechy i nasiona", "Tofu", 8, "Białko roślinne, wapń (jeśli solone wapniem), mało kalorii."],
+["Strączkowe, orzechy i nasiona", "Hummus", 8, "Ciecierzyca, tahini i oliwa. Zdrowy, ale kaloryczny."],
+["Strączkowe, orzechy i nasiona", "Edamame", 9, "Młoda soja: białko, błonnik, folian."],
+["Strączkowe, orzechy i nasiona", "Pistacje", 8, "Białko, błonnik, zdrowe tłuszcze. Bez soli."],
+["Strączkowe, orzechy i nasiona", "Orzechy nerkowca", 8, "Magnez i cynk, zdrowe tłuszcze, kaloryczne."],
+["Strączkowe, orzechy i nasiona", "Pestki dyni", 9, "Magnez, cynk, żelazo, białko."],
+["Strączkowe, orzechy i nasiona", "Masło orzechowe (100% orzechów)", 7, "Zdrowe tłuszcze i białko, bez dodatków. Kaloryczne, jedna łyżka."],
+["Tłuszcze", "Olej lniany", 8, "Bardzo dużo omega-3 (ALA). Tylko na zimno, nie do smażenia."],
+["Tłuszcze", "Margaryna", 4, "Zależy od składu: nowsze są lepsze, starsze mają tłuszcze trans."],
+["Tłuszcze", "Olej kokosowy", 3, "Prawie same tłuszcze nasycone, podnosi cholesterol LDL."],
+["Tłuszcze", "Majonez", 3, "Tłusty, kaloryczny, często z dodatkami."],
+["Słodycze i przekąski", "Popcorn bez dodatków", 6, "Pełne ziarno i błonnik, mało kalorii. Bez masła i soli."],
+["Słodycze i przekąski", "Frytki", 3, "Smażone w głębokim tłuszczu, dużo soli i kalorii."],
+["Słodycze i przekąski", "Batonik czekoladowy", 2, "Cukier, tłuszcze utwardzone, mało wartości odżywczej."],
+["Słodycze i przekąski", "Lody", 3, "Cukier i tłuszcz, ale dają trochę wapnia. Sporadycznie."],
+["Słodycze i przekąski", "Krem czekoladowo-orzechowy", 2, "Głównie cukier i olej palmowy, orzechów jest niewiele."],
+["Słodycze i przekąski", "Miód", 4, "Prawie sam cukier z odrobiną składników. Nie jest zdrowszy od cukru w dużych ilościach."],
+["Napoje", "Herbata czarna", 8, "Polifenole, bez kalorii (bez cukru)."],
+["Napoje", "Herbata ziołowa", 8, "Bez kalorii, niektóre działają łagodnie na trawienie lub sen."],
+["Napoje", "Woda gazowana", 9, "Nawadnia tak samo jak woda niegazowana."],
+["Napoje", "Sok pomidorowy", 7, "Likopen, mało kalorii. Wybieraj bez soli."],
+["Napoje", "Napój sojowy bez cukru", 7, "Roślinny zamiennik mleka, wybieraj wzbogacany wapniem."],
+["Napoje", "Piwo", 2, "Alkohol nie ma bezpiecznej dawki, obciąża wątrobę i podnosi ryzyko nowotworów."],
+["Napoje", "Napój energetyczny", 1, "Dużo cukru i kofeiny, obciąża serce i sen."],
+["Zboża i makarony", "Mąka pszenna", 4, "Rafinowana, mało błonnika. Do naleśników lub ciast lepiej dodać część mąki razowej."],
+["Zboża i makarony", "Bułka tarta", 3, "Biała mąka, panierka dodaje kalorii i niewiele daje poza tym."],
+["Warzywa", "Koncentrat pomidorowy", 7, "Dużo likopenu, ale bywa słony. Szukaj bez dodatku soli i cukru."],
+["Warzywa", "Pomidory z puszki", 8, "Likopen i witamina C, wygodne i tanie. Wybieraj bez soli i cukru."]
+];
+var DI=[
+{n:"Dieta śródziemnomorska",s:9,o:"Sposób jedzenia z krajów wokół Morza Śródziemnego. Podstawą są warzywa, owoce, pełne ziarna, strączkowe, orzechy i oliwa.",j:"Warzywa, owoce, strączkowe, pełne ziarna, ryby, oliwa z oliwek, orzechy. Mało nabiału, drób i jajka.",u:"Czerwone mięso, wędliny, słodycze, białe pieczywo, słodzone napoje.",p:"Najlepiej przebadana. Mniejsze ryzyko chorób serca, cukrzycy typu 2 i udaru. Łatwo ją utrzymać na co dzień.",m:"Oliwa i orzechy są kaloryczne, a ryby bywają drogie. Sama w sobie nie jest dietą odchudzającą.",d:"Prawie wszyscy. Dobra opcja domyślna."},
+{n:"Dieta wegetariańska",s:8,o:"Bez mięsa i ryb. Zwykle dopuszcza nabiał i jajka.",j:"Warzywa, owoce, strączkowe, zboża, orzechy, nabiał, jajka.",u:"Mięso, ryby, wędliny.",p:"Mniejsze ryzyko chorób serca i nadwagi, więcej błonnika.",m:"Łatwo o niedobory żelaza, cynku i omega-3. Można też jeść same sery, pieczywo i słodycze, co nie jest zdrowe.",d:"Osoby, które chcą ograniczyć mięso. Warto badać żelazo i ferrytynę."},
+{n:"Dieta wegańska",s:7,o:"Wyłącznie produkty roślinne, bez nabiału, jajek i miodu.",j:"Warzywa, owoce, strączkowe, zboża, orzechy, nasiona, tofu, napoje roślinne wzbogacane.",u:"Wszystkie produkty zwierzęce.",p:"Dużo błonnika, niskie ryzyko chorób serca, dobry wpływ na cholesterol.",m:"Wymaga suplementacji witaminy B12 (bez wyjątków) i uwagi przy wapniu, jodzie, żelazie, witaminie D oraz omega-3. Źle prowadzona grozi niedoborami.",d:"Osoby świadome i zdecydowane. Dla dzieci i kobiet w ciąży tylko pod opieką dietetyka."},
+{n:"Post przerywany (np. 16:8 lub 5:2)",s:6,o:"Nie dieta, a sposób organizacji posiłków: jesz w oknie np. 8 godzin, a przez pozostałe 16 nie. Wersja 5:2 to dwa dni w tygodniu z mocno ograniczonymi kaloriami.",j:"Bez ograniczeń co do produktów, ale liczy się jakość posiłków.",u:"Jedzenie poza oknem czasowym.",p:"Dla wielu osób ułatwia kontrolę kalorii. Wyniki odchudzania zbliżone do zwykłego ograniczenia kalorii.",m:"Nie jest lepszy od klasycznej redukcji, mimo szumu w mediach. Może nasilać zaburzenia odżywiania. Nie dla ciężarnych, diabetyków na lekach i osób z historią zaburzeń odżywiania.",d:"Osoby, którym pasuje taki rytm."},
+{n:"Dieta Montignaca (niski indeks glikemiczny)",s:6,o:"Francuska dieta oparta na indeksie glikemicznym. Wybierasz produkty, które powoli podnoszą cukier we krwi.",j:"Pełne ziarna, strączkowe, większość warzyw i owoców, chude białko, dobre tłuszcze.",u:"Białe pieczywo, cukier, ziemniaki, biały ryż, słodycze (w pierwszej fazie także łączenie tłuszczów z węglowodanami).",p:"Pomaga stabilizować cukier i apetyt, korzystna przy insulinooporności.",m:"Zasady łączenia produktów w pierwszej fazie nie mają mocnych dowodów. IG zależy od przygotowania posiłku, więc bywa mylący.",d:"Insulinooporność, osoby, którym po słodkim szybko wraca głód."},
+{n:"Dieta Atkinsa (low-carb)",s:5,o:"Bardzo mało węglowodanów na początku, potem stopniowo więcej. Jedna z pierwszych modnych diet niskowęglowodanowych.",j:"Mięso, ryby, jajka, ser, warzywa nieskrobiowe, tłuszcze.",u:"Cukier, pieczywo, makarony, ryż, ziemniaki, większość owoców (w pierwszej fazie).",p:"Skuteczna na wagę w krótkim czasie, syci.",m:"Łatwo przesadzić z tłustym mięsem i wędlinami. W dłuższej perspektywie nie wypada lepiej od innych diet. Początkowo możliwe zmęczenie i bóle głowy.",d:"Insulinooporność i cukrzyca (pod kontrolą lekarza)."},
+{n:"Dieta ketogeniczna (keto)",s:5,o:"Skrajnie mało węglowodanów (zwykle poniżej 50 g), bardzo dużo tłuszczu, żeby organizm spalał ketony.",j:"Tłuste mięso, ryby, jajka, masło, oleje, awokado, orzechy, zielone warzywa.",u:"Chleb, kasze, ryż, owoce, strączkowe, ziemniaki, słodycze.",p:"Stosowana leczniczo w epilepsji lekoopornej. Szybki spadek wagi na początku.",m:"Trudna do utrzymania, często podnosi cholesterol LDL, grozi niedoborem błonnika i witamin, tzw. keto-grypa. Dowody długoterminowe są słabe.",d:"Tylko pod opieką lekarza lub dietetyka. Dla większości to zbyt ostra opcja."},
+{n:"Dieta paleo",s:5,o:"Jedzenie jak „człowiek pierwotny”: bez zbóż, nabiału i przetworzonej żywności.",j:"Mięso, ryby, jajka, warzywa, owoce, orzechy.",u:"Zboża, nabiał, strączkowe, cukier, produkty przetworzone.",p:"Eliminuje przetworzoną żywność, może pomóc w odchudzaniu.",m:"Odcina zdrowe grupy (pełne ziarna, strączkowe), co nie ma poparcia w nauce. Założenie o „diecie przodków” jest historycznie wątpliwe.",d:"Raczej nikomu nie jest potrzebna, lepsza jest dieta śródziemnomorska."},
+{n:"Dieta bezglutenowa",s:4,o:"Bez pszenicy, żyta, jęczmienia i produktów z glutenem.",j:"Ryż, kukurydza, gryka, proso, ziemniaki, warzywa, owoce, mięso, ryby.",u:"Zwykły chleb, makaron, kasza manna, piwo, większość wypieków.",p:"Konieczna przy celiakii (tu ocena 10/10). Pomaga też przy potwierdzonej nadwrażliwości na gluten.",m:"Bez wskazań medycznych nie jest zdrowsza, a gotowe produkty bezglutenowe bywają bardziej przetworzone, droższe i uboższe w błonnik.",d:"Tylko osoby z celiakią lub zdiagnozowaną nadwrażliwością. Nie odstawiaj glutenu przed badaniami."},
+{n:"Dieta Dąbrowskiej (warzywno-owocowa)",s:3,o:"Popularna w Polsce kuracja: kilka tygodni wyłącznie na warzywach i owocach o niskim IG, zwykle ok. 800 do 1000 kcal dziennie.",j:"Warzywa (poza ziemniakami i strączkowymi), niektóre owoce, woda, herbatki.",u:"Mięso, nabiał, pieczywo, zboża, cukier, kawa, alkohol.",p:"Dużo warzyw i błonnika, szybki spadek wagi.",m:"Bardzo mało białka i kalorii, ryzyko utraty mięśni, osłabienia i niedoborów. Brak mocnych badań na „oczyszczanie” czy leczenie. Efekt jojo.",d:"Nie bez konsultacji z lekarzem. Nie dla ciężarnych, dzieci, osób z cukrzycą, chorobami nerek i zaburzeniami odżywiania."},
+{n:"Dieta Dukana",s:3,o:"Bardzo dużo białka, mało węglowodanów i tłuszczu, w czterech etapach.",j:"Chude mięso, ryby, jajka, twaróg, otręby owsiane, później warzywa.",u:"Na początku prawie wszystkie węglowodany i warzywa.",p:"Szybki spadek wagi na początku.",m:"Brak warzyw i błonnika, obciążenie nerek, efekt jojo, niedobory witamin. Mało kto się jej trzyma.",d:"Nikomu bym jej nie polecał."},
+{n:"Dieta sokowa (oczyszczająca)",s:2,o:"Kilka dni na samych sokach i koktajlach, żeby „oczyścić organizm” i szybko schudnąć.",j:"Soki owocowe i warzywne, koktajle.",u:"Wszystko stałe.",p:"Szybko spada waga, ale to głównie woda i masa mięśniowa.",m:"Nie ma toksyn do „wypłukania sokiem”, bo robią to wątroba i nerki. Dużo cukru bez błonnika, osłabienie, szybki powrót wagi.",d:"Nikomu. Cały owoc i warzywo są lepsze niż sok."},
+{n:"Dieta kapuściana",s:1,o:"Kilka dni na zupie z kapusty i niewielu dodatkach, obiecuje szybki spadek wagi.",j:"Zupa kapuściana, trochę warzyw i owoców, w niektóre dni chude mięso.",u:"Prawie wszystko inne.",p:"Dużo warzyw, niska kaloryczność.",m:"Monotonna, uboga w białko i tłuszcze, wzdęcia, osłabienie, efekt jojo. Waga spada przez wodę.",d:"Nikomu. Jedna zupa kapuściana w tygodniu jest ok, dieta nie."},
+{n:"Dieta kopenhaska",s:1,o:"13-dniowa, bardzo restrykcyjna kuracja (ok. 600 do 1000 kcal dziennie) o sztywnym jadłospisie z jajkami, kawą i mięsem.",j:"Jajka, kawa, mięso, szpinak, sałata, grejpfrut, w ścisłej kolejności.",u:"Cukier, pieczywo, makarony, alkohol, praktycznie wszystko poza jadłospisem.",p:"Szybki spadek wagi.",m:"Skrajnie niskokaloryczna, brak błonnika i witamin, głód, osłabienie, efekt jojo. Brak badań potwierdzających skuteczność.",d:"Nikomu."}
+];
+function drow(l,t){return'<dt>'+l+'</dt><dd>'+esc(t)+'</dd>'}
+function renderDiets(){
+list.innerHTML='<p class="lead">Najbardziej znane diety, od najzdrowszej do najgorszej, z oceną zdrowotności 1 do 10. To moja ocena na podstawie dostępnych badań, z największą pewnością dla diety śródziemnomorskiej. Najlepsza dieta to taka, którą da się utrzymać latami.</p>'+DI.map(function(d){
+return'<section class="diet"><h2>'+esc(d.n)+'<small style="color:'+col(d.s)+';font-weight:800;font-size:1.2rem">'+d.s+'/10</small></h2>'
++'<div class="bar"><b style="width:'+d.s*10+'%;background:'+col(d.s)+'"></b></div>'
++'<p class="dopis">'+esc(d.o)+'</p><dl>'+drow("Jesz",d.j)+drow("Unikasz",d.u)+drow("Zalety",d.p)+drow("Wady",d.m)+drow("Dla kogo",d.d)+'</dl></section>'}).join("")}
+function renderBmi(){
+list.innerHTML='<section class="bmi"><h2>Kalkulator BMI<small>dla dorosłych, 18 lat i więcej</small></h2>'
++'<div class="bf"><label>Wzrost (cm)<input id="bh" type="text" inputmode="decimal" placeholder="np. 175" autocomplete="off"></label>'
++'<label>Waga (kg)<input id="bw" type="text" inputmode="decimal" placeholder="np. 70" autocomplete="off"></label></div>'
++'<div id="bres" class="bres" aria-live="polite"></div>'
++'<div class="bscale"><i></i><b id="bmk" hidden></b></div>'
++'<table class="bt"><tbody><tr><td><span class="dot" style="background:#3b82c4"></span>poniżej 18,5</td><td>niedowaga</td></tr>'
++'<tr><td><span class="dot" style="background:#2f8f4e"></span>18,5 do 24,9</td><td>waga prawidłowa</td></tr>'
++'<tr><td><span class="dot" style="background:#e0a526"></span>25 do 29,9</td><td>nadwaga</td></tr>'
++'<tr><td><span class="dot" style="background:#e07a26"></span>30 do 34,9</td><td>otyłość I stopnia</td></tr>'
++'<tr><td><span class="dot" style="background:#c0392b"></span>35 i więcej</td><td>otyłość II i III stopnia (od 40)</td></tr></tbody></table>'
++'<p class="bnote"><b>Ograniczenia BMI.</b> Wzór dzieli wagę przez kwadrat wzrostu i nie odróżnia mięśni od tłuszczu. Osoba umięśniona (np. kulturysta) może mieć „nadwagę” przy niskim tłuszczu, a osoba szczupła z małą ilością mięśni może mieć „prawidłowe” BMI i dużo tłuszczu w brzuchu. Nie uwzględnia wieku, płci ani budowy ciała. Nie stosuj go dla dzieci, kobiet w ciąży i sportowców wyczynowych. U osób po 65. roku życia nieco wyższe BMI bywa korzystne.</p>'
++'<p class="bnote"><b>Lepiej uzupełnić BMI obwodem talii.</b> Ryzyko dla zdrowia rośnie powyżej 80 cm u kobiet i 94 cm u mężczyzn, a wyraźnie wysokie powyżej 88 cm i 102 cm. Wynik jest orientacyjny i nie zastępuje rozmowy z lekarzem.</p></section>';
+var bh=document.getElementById("bh"),bw=document.getElementById("bw"),res=document.getElementById("bres"),mk=document.getElementById("bmk");
+function num(el){return parseFloat(el.value.replace(",","."))}
+function calc(){var h=num(bh),w=num(bw);mk.hidden=true;
+if(!h||!w){res.innerHTML='<p class="empty">Wpisz wzrost i wagę, wynik pojawi się od razu.</p>';return}
+if(h<100||h>250||w<20||w>400){res.innerHTML='<p class="empty">Sprawdź dane: wzrost podaj w centymetrach (100 do 250), a wagę w kilogramach (20 do 400).</p>';return}
+var m=h/100,b=w/(m*m),c,k;
+if(b<18.5){c="Niedowaga";k="#3b82c4"}else if(b<25){c="Waga prawidłowa";k="#2f8f4e"}else if(b<30){c="Nadwaga";k="#e0a526"}else if(b<35){c="Otyłość I stopnia";k="#e07a26"}else if(b<40){c="Otyłość II stopnia";k="#c0392b"}else{c="Otyłość III stopnia";k="#c0392b"}
+var lo=(18.5*m*m).toFixed(1).replace(".",","),hi=(24.9*m*m).toFixed(1).replace(".",",");
+res.innerHTML='<div class="bnum" style="color:'+k+'">'+b.toFixed(1).replace(".",",")+'</div><div><strong>'+c+'</strong><br><span class="kc" style="display:inline;font-size:.9rem">Prawidłowa waga dla wzrostu '+Math.round(h)+' cm to ok. '+lo+' do '+hi+' kg.</span></div>';
+mk.style.left=Math.min(100,Math.max(0,(b-15)/25*100))+"%";mk.hidden=false}
+bh.oninput=calc;bw.oninput=calc;calc()}
+function renderCal(){
+list.innerHTML='<section class="bmi"><h2>Ile kalorii dziennie?<small>dla dorosłych, 18 lat i więcej</small></h2>'
++'<div class="bf"><label>Płeć<select id="cs"><option value="m">Mężczyzna</option><option value="k">Kobieta</option></select></label>'
++'<label>Wiek (lata)<input id="ca" type="text" inputmode="numeric" placeholder="np. 30" autocomplete="off"></label>'
++'<label>Wzrost (cm)<input id="ch" type="text" inputmode="decimal" placeholder="np. 175" autocomplete="off"></label>'
++'<label>Waga (kg)<input id="cw" type="text" inputmode="decimal" placeholder="np. 70" autocomplete="off"></label></div>'
++'<div class="bf"><label>Aktywność<select id="cact">'
++'<option value="1.2">Siedzący tryb życia, brak treningów</option>'
++'<option value="1.375">Lekka: 1 do 3 treningów w tygodniu</option>'
++'<option value="1.55">Umiarkowana: 3 do 5 treningów w tygodniu</option>'
++'<option value="1.725">Wysoka: 6 do 7 treningów w tygodniu</option>'
++'<option value="1.9">Bardzo wysoka: ciężka praca fizyczna i treningi</option></select></label>'
++'<label>Cel<select id="cg"><option value="0">Utrzymać wagę</option><option value="-0.1">Schudnąć powoli (−10%)</option><option value="-0.2">Schudnąć (−20%)</option><option value="0.1">Przytyć, zwiększyć masę (+10%)</option></select></label></div>'
++'<div id="cres" aria-live="polite"></div>'
++'<p class="bnote"><b>To szacunek, nie wyrok.</b> Wzór Mifflina-St Jeora (podstawa przemiany materii) razy współczynnik aktywności daje zwykle wynik z błędem rzędu 10 do 20%. Jeśli nie jesteś pewien aktywności, wybierz niższą, bo ludzie ją zwykle przeszacowują. Jedz według wyniku 2 do 3 tygodni, ważąc się rano raz w tygodniu, i koryguj o ok. 100 do 200 kcal, jeśli waga nie zmienia się tak, jak chcesz.</p>'
++'<p class="bnote"><b>Nie stosuj</b> w ciąży i karmieniu piersią, przy cukrzycy, chorobach nerek, tarczycy i zaburzeniach odżywiania bez konsultacji z lekarzem lub dietetykiem. Kalkulator nie schodzi poniżej 1200 kcal dla kobiet i 1500 kcal dla mężczyzn, bo przy mniejszej ilości trudno pokryć zapotrzebowanie na składniki odżywcze.</p></section>';
+var g=function(i){return document.getElementById(i)},res=g("cres");
+function num(el){return parseFloat(el.value.replace(",","."))}
+function r10(x){return Math.round(x/10)*10}
+function f(n){return String(n).replace(".",",")}
+function calc(){var a=num(g("ca")),h=num(g("ch")),w=num(g("cw")),bad=!!g("ca").value.trim()&&!(a>=18&&a<=90);
+g("ca").classList.toggle("bad",bad);g("ca").setAttribute("aria-invalid",bad);
+if(bad){res.innerHTML='<p class="empty badmsg">Nieodpowiedni wiek. Kalkulator jest tylko dla dorosłych: wpisz wiek od 18 do 90 lat.</p>';return}
+if(!a||!h||!w){res.innerHTML='<p class="empty">Wpisz wiek, wzrost i wagę, wynik pojawi się od razu.</p>';return}
+if(a<18||a>90||h<100||h>250||w<30||w>400){res.innerHTML='<p class="empty">Sprawdź dane: wiek 18 do 90 lat, wzrost 100 do 250 cm, waga 30 do 400 kg. Kalkulator jest tylko dla dorosłych.</p>';return}
+var m=g("cs").value==="m",bmr=10*w+6.25*h-5*a+(m?5:-161),tdee=bmr*parseFloat(g("cact").value),gl=parseFloat(g("cg").value),target=tdee*(1+gl),fl=m?1500:1200,floored=false;
+if(gl<0&&target<fl){target=fl;floored=true}
+var diff=target-tdee,wk=diff*7/7700,pct=Math.abs(wk)/w*100,note="";
+if(floored)note+='<p class="bnote">Wyliczony wynik był niższy niż bezpieczne minimum, więc ustawiłem '+fl+' kcal. Przy takim zapotrzebowaniu bardzo szybka redukcja nie jest dobrym pomysłem, lepiej wybrać „Utrzymać wagę" lub łagodniejszy cel i skonsultować się z dietetykiem.</p>';
+var rate=gl===0?"waga powinna się utrzymać":"ok. "+(wk<0?"−":"+")+f(Math.abs(wk).toFixed(2))+" kg tygodniowo"+(wk<0?" (spadek)":" (wzrost)");
+var pk=[1,1.2,1.4,1.6,1.8][[1.2,1.375,1.55,1.725,1.9].indexOf(parseFloat(g("cact").value))]+(gl<0?0.3:gl>0?0.2:0);pk=Math.min(2.2,pk);
+var P=pk*w;if(P*4>0.35*target)P=0.35*target/4;
+var F=0.27*target/9,C=(target-P*4-F*9)/4,pp=Math.round(P*4/target*100),pf=27,pc=100-pp-pf;
+function r5(x){return Math.round(x/5)*5}
+var mac='<h3 class="mh">Dzienny podział makroskładników</h3><div class="mbar" role="img" aria-label="Białko '+pp+'%, tłuszcze '+pf+'%, węglowodany '+pc+'%"><span style="width:'+pp+'%;background:#fff"></span><span style="width:'+pf+'%;background:#f5c542"></span><span style="width:'+pc+'%;background:#5aaaf5"></span></div>'
++'<table class="bt"><tbody>'
++'<tr><td><span class="dot" style="background:#fff;box-shadow:0 0 0 1px #888"></span>'+mx("w","Białko")+'</td><td>'+mx("w",r5(P)+" g")+'</td><td>'+f((P/w).toFixed(1))+' g/kg, '+r10(P*4)+' kcal, '+pp+'%</td></tr>'
++'<tr><td><span class="dot" style="background:#f5c542"></span>'+mx("f","Tłuszcze")+'</td><td>'+mx("f",r5(F)+" g")+'</td><td>'+r10(F*9)+' kcal, '+pf+'%</td></tr>'
++'<tr><td><span class="dot" style="background:#5aaaf5"></span>'+mx("c","Węglowodany")+'</td><td>'+mx("c",r5(C)+" g")+'</td><td>'+r10(C*4)+' kcal, '+pc+'%</td></tr></tbody></table>'
++'<p class="bnote">Białko jest liczone od masy ciała (zależnie od aktywności i celu, od 1,0 do 2,2 g/kg), tłuszcze to ok. 27% kalorii, a węglowodany to reszta. To rozsądny punkt wyjścia, a nie jedyny słuszny podział, bo normy dopuszczają tłuszcze w zakresie ok. 20 do 35% i węglowodany ok. 45 do 65% kalorii. Przy dużej nadwadze białko liczone od wagi rzeczywistej bywa zawyżone, więc ograniczyłem je do 35% kalorii. Przy chorobach nerek ilość białka skonsultuj z lekarzem.</p>';
+res.innerHTML='<div class="bres"><div class="bnum" style="color:var(--s9)">'+r10(target)+'<span style="font-size:1.1rem;font-weight:600"> kcal / dzień</span></div></div>'
++'<p class="bnote" style="color:var(--ink)">Podstawowa przemiana materii (BMR): <b>'+r10(bmr)+' kcal</b><br>Całkowite zapotrzebowanie (utrzymanie wagi): <b>'+r10(tdee)+' kcal</b><br>Przy tym celu: '+rate+'</p>'+mac+note}
+["cs","ca","ch","cw","cact","cg"].forEach(function(i){g(i).oninput=calc;g(i).onchange=calc});calc()}
+var EM={"Warzywa":"🥦","Owoce":"🍎","Pieczywo":"🍞","Nabiał":"🥛","Mięso, ryby i jaja":"🍗","Zboża i makarony":"🌾","Strączkowe, orzechy i nasiona":"🥜","Tłuszcze":"🫒","Słodycze i przekąski":"🍫","Napoje":"🥤"};
+var cats=[];D.forEach(function(d){if(cats.indexOf(d[0])<0)cats.push(d[0])});
+var cur="Wszystkie",tabs=document.getElementById("tabs"),q=document.getElementById("q"),sortEl=document.getElementById("sort"),list=document.getElementById("list");
+var SUB={
+"Suszone owoce":"świeże owoce lub mrożone owoce bez dodatku cukru; suszone tylko garść, bez słodzenia",
+"Chleb pszenny jasny":"chleb żytni razowy lub pełnoziarnisty na zakwasie",
+"Bułka paryska":"grahamka lub bułka pełnoziarnista",
+"Tost biały":"tost pełnoziarnisty lub zwykłe kromki chleba razowego",
+"Ser żółty":"twaróg, ser typu cottage lub mozzarella light",
+"Jogurt owocowy słodzony":"jogurt naturalny ze świeżymi owocami lub jagodami",
+"Wieprzowina":"pierś z kurczaka, indyk lub ryba",
+"Parówki i kiełbasa":"pieczona pierś z kurczaka lub indyka, jajko na twardo, pasta z ciecierzycy",
+"Boczek":"pieczona pierś z indyka lub plastry wędzonego łososia",
+"Biały ryż":"brązowy ryż, kasza gryczana lub jęczmienna",
+"Makaron pszenny":"makaron razowy lub z soczewicy i ciecierzycy",
+"Płatki kukurydziane słodzone":"płatki owsiane z owocami lub musli bez cukru",
+"Orzeszki solone":"niesolone orzechy włoskie, migdały lub nerkowce",
+"Masło":"oliwa z oliwek lub olej rzepakowy; na kanapkę hummus lub awokado",
+"Smalec":"pasta z awokado lub z fasoli, hummus",
+"Czekolada mleczna":"gorzka czekolada 70%+ (kilka kostek) lub jabłko z masłem orzechowym",
+"Ciastka":"owoc, garść orzechów lub domowe ciastka owsiane z bananem",
+"Chipsy":"prażony groszek lub ciecierzyca, popcorn bez soli, słupki marchewki i papryki",
+"Cukierki":"świeże owoce, np. winogrona lub truskawki",
+"Sok owocowy":"cały owoc lub woda z cytryną i miętą",
+"Cola i napoje słodzone":"woda gazowana z cytryną, zimna herbata bez cukru",
+"Daktyle":"świeże owoce, np. gruszka lub jabłko, albo 1 suszona morela",
+"Bagietka":"chleb żytni razowy lub pumpernikiel",
+"Wafle ryżowe":"pieczywo chrupkie żytnie lub chleb razowy",
+"Croissant":"grahamka lub kromka chleba razowego z dżemem bez cukru",
+"Śmietana 18%":"jogurt naturalny lub grecki",
+"Ser topiony":"twaróg, serek wiejski lub hummus",
+"Szynka (wędlina)":"pieczona pierś z indyka lub kurczaka, jajko, pasta z ciecierzycy",
+"Mięso mielone wieprzowo-wołowe":"mielony indyk lub kurczak, soczewica lub tofu",
+"Pasztet":"hummus, pasta z fasoli lub twarożek z ziołami",
+"Paluszki rybne":"pieczony dorsz lub inna ryba z piekarnika",
+"Kasza manna":"kasza jaglana, płatki owsiane lub kasza jęczmienna",
+"Granola słodzona":"płatki owsiane z owocami lub musli bez cukru",
+"Margaryna":"oliwa z oliwek, awokado lub hummus",
+"Olej kokosowy":"oliwa z oliwek lub olej rzepakowy",
+"Majonez":"jogurt naturalny z musztardą, hummus lub awokado",
+"Frytki":"ziemniaki lub batat pieczone w piekarniku z odrobiną oleju",
+"Batonik czekoladowy":"gorzka czekolada (kilka kostek), owoc lub garść orzechów",
+"Lody":"mrożone owoce zblendowane z jogurtem lub sorbet z owoców",
+"Krem czekoladowo-orzechowy":"masło orzechowe 100% lub banan z odrobiną kakao",
+"Miód":"świeże owoce lub cynamon do jogurtu",
+"Piwo":"piwo bezalkoholowe lub woda gazowana z cytryną",
+"Napój energetyczny":"woda, zielona herbata lub kawa","Mąka pszenna":"mąka razowa, orkiszowa lub owsiana","Bułka tarta":"zmielone płatki owsiane lub otręby"};
+var KC={"Brokuł":34,"Szpinak":23,"Burak":43,"Kapusta (w tym kiszona)":25,"Marchew":41,"Pomidor":18,"Papryka":31,"Cebula":40,"Ogórek":15,"Ziemniak (gotowany)":87,
+"Jagody":57,"Truskawki":32,"Jabłko":52,"Pomarańcza":47,"Awokado":160,"Banan":89,"Winogrona":69,"Suszone owoce":280,
+"Chleb żytni razowy":230,"Chleb pełnoziarnisty":250,"Bułka grahamka":260,"Chleb pszenny jasny":265,"Bułka paryska":280,"Tost biały":270,
+"Kefir":51,"Jogurt naturalny":61,"Twaróg":100,"Mleko":50,"Ser żółty":350,"Jogurt owocowy słodzony":90,
+"Łosoś":208,"Śledź":200,"Jajka":143,"Pierś z kurczaka":120,"Wołowina (chuda)":150,"Wieprzowina":240,"Parówki i kiełbasa":290,"Boczek":420,
+"Płatki owsiane":370,"Kasza gryczana":340,"Brązowy ryż":360,"Makaron razowy":350,"Biały ryż":350,"Makaron pszenny":360,"Płatki kukurydziane słodzone":380,
+"Soczewica":350,"Ciecierzyca":360,"Fasola":340,"Orzechy włoskie":650,"Migdały":580,"Nasiona chia":490,"Orzeszki solone":600,
+"Oliwa z oliwek extra virgin":884,"Olej rzepakowy":884,"Masło":740,"Smalec":900,
+"Gorzka czekolada (70%+)":570,"Czekolada mleczna":540,"Ciastka":480,"Chipsy":540,"Cukierki":380,
+"Woda":0,"Zielona herbata":1,"Kawa czarna":2,"Sok owocowy":45,"Cola i napoje słodzone":42,"Batat (gotowany)":90,"Kalafior":25,"Cukinia":17,"Sałata":15,"Pieczarki":22,"Brukselka":43,"Kukurydza (gotowana)":96,"Maliny":52,"Kiwi":61,"Grejpfrut":42,"Gruszka":57,"Mango":60,"Arbuz":30,"Daktyle":280,"Pumpernikiel":250,"Pieczywo chrupkie żytnie":330,"Tortilla pełnoziarnista":290,"Bagietka":270,"Wafle ryżowe":380,"Croissant":410,"Skyr":63,"Serek wiejski":98,"Maślanka":40,"Jogurt grecki":97,"Feta":264,"Śmietana 18%":190,"Ser topiony":270,"Tuńczyk w wodzie":116,"Dorsz":82,"Makrela":205,"Sardynki":210,"Pierś z indyka":110,"Krewetki":99,"Szynka (wędlina)":150,"Mięso mielone wieprzowo-wołowe":250,"Pasztet":260,"Paluszki rybne":230,"Kasza jaglana":370,"Kasza jęczmienna":350,"Quinoa":370,"Musli bez cukru":360,"Ryż basmati":350,"Kasza manna":350,"Granola słodzona":450,"Tofu":76,"Hummus":230,"Edamame":121,"Pistacje":560,"Orzechy nerkowca":550,"Pestki dyni":560,"Masło orzechowe (100% orzechów)":590,"Olej lniany":884,"Margaryna":720,"Olej kokosowy":860,"Majonez":680,"Popcorn bez dodatków":380,"Frytki":310,"Batonik czekoladowy":480,"Lody":200,"Krem czekoladowo-orzechowy":540,"Miód":304,"Herbata czarna":1,"Herbata ziołowa":1,"Woda gazowana":0,"Sok pomidorowy":17,"Napój sojowy bez cukru":40,"Piwo":43,"Napój energetyczny":45,"Mąka pszenna":350,"Bułka tarta":360,"Koncentrat pomidorowy":82,"Pomidory z puszki":24};
+var MAC={"Brokuł":[2.8,0.4,6.6],"Szpinak":[2.9,0.4,3.6],"Burak":[1.6,0.2,9.6],"Kapusta (w tym kiszona)":[1.3,0.1,5.8],"Marchew":[0.9,0.2,9.6],"Pomidor":[0.9,0.2,3.9],"Papryka":[1,0.3,6],"Cebula":[1.1,0.1,9.3],"Ogórek":[0.7,0.1,3.6],"Ziemniak (gotowany)":[1.9,0.1,20],"Jagody":[0.7,0.3,14],"Truskawki":[0.7,0.3,7.7],"Jabłko":[0.3,0.2,14],"Pomarańcza":[0.9,0.1,12],"Awokado":[2,15,9],"Banan":[1.1,0.3,23],"Winogrona":[0.7,0.2,18],"Suszone owoce":[2.5,0.5,68],"Chleb żytni razowy":[7,1.5,45],"Chleb pełnoziarnisty":[9,3,46],"Bułka grahamka":[9,2.5,50],"Chleb pszenny jasny":[8,1.5,52],"Bułka paryska":[9,1.5,57],"Tost biały":[8,3,50],"Kefir":[3.4,2,4.7],"Jogurt naturalny":[3.5,3.3,4.7],"Twaróg":[17,2,3.5],"Mleko":[3.4,2,4.8],"Ser żółty":[25,27,1.5],"Jogurt owocowy słodzony":[3.5,2.5,13],"Łosoś":[20,14,0],"Śledź":[18,14,0],"Jajka":[12.6,9.5,0.7],"Pierś z kurczaka":[23,3,0],"Wołowina (chuda)":[21,7,0],"Wieprzowina":[18,18,0],"Parówki i kiełbasa":[12,26,2],"Boczek":[13,40,0],"Płatki owsiane":[13,7,62],"Kasza gryczana":[12,3,67],"Brązowy ryż":[7.5,2.7,76],"Makaron razowy":[13,2.5,66],"Biały ryż":[7,0.6,79],"Makaron pszenny":[12,1.5,73],"Płatki kukurydziane słodzone":[6,1,85],"Soczewica":[25,1.5,60],"Ciecierzyca":[19,6,61],"Fasola":[22,1.5,60],"Orzechy włoskie":[15,60,14],"Migdały":[21,50,10],"Nasiona chia":[17,31,28],"Orzeszki solone":[25,50,16],"Oliwa z oliwek extra virgin":[0,100,0],"Olej rzepakowy":[0,100,0],"Masło":[0.7,82,0.6],"Smalec":[0,99,0],"Gorzka czekolada (70%+)":[8,42,38],"Czekolada mleczna":[7,31,57],"Ciastka":[6,20,68],"Chipsy":[6,35,50],"Cukierki":[0,0,95],"Woda":[0,0,0],"Zielona herbata":[0,0,0],"Kawa czarna":[0.1,0,0],"Sok owocowy":[0.5,0.1,10.5],"Cola i napoje słodzone":[0,0,10.6],"Maliny":[1.2,0.7,12],"Kiwi":[1.1,0.5,15],"Grejpfrut":[0.8,0.1,11],"Gruszka":[0.4,0.1,15],"Mango":[0.8,0.4,15],"Arbuz":[0.6,0.2,7.6],"Daktyle":[2.5,0.4,75],"Batat (gotowany)":[2,0.1,21],"Kalafior":[1.9,0.3,5],"Cukinia":[1.2,0.3,3.1],"Sałata":[1.4,0.2,2.9],"Pieczarki":[3.1,0.3,3.3],"Brukselka":[3.4,0.3,7],"Kukurydza (gotowana)":[3.4,1.5,18],"Pumpernikiel":[7.5,1.5,47],"Pieczywo chrupkie żytnie":[9,2,68],"Tortilla pełnoziarnista":[9,6,48],"Bagietka":[9,1,56],"Wafle ryżowe":[8,3,80],"Croissant":[8,22,45],"Skyr":[11,0.2,4],"Serek wiejski":[11,4.3,3.4],"Maślanka":[3.3,0.9,4.8],"Jogurt grecki":[6,6,4],"Feta":[14,21,4],"Śmietana 18%":[2.7,18,3.4],"Ser topiony":[12,22,4],"Tuńczyk w wodzie":[26,1,0],"Dorsz":[18,0.7,0],"Makrela":[19,14,0],"Sardynki":[24,12,0],"Pierś z indyka":[24,1.5,0],"Krewetki":[24,0.3,0],"Szynka (wędlina)":[18,8,1],"Mięso mielone wieprzowo-wołowe":[17,20,0],"Pasztet":[12,22,5],"Paluszki rybne":[11,10,25],"Kasza jaglana":[11,4,73],"Kasza jęczmienna":[10,1.5,73],"Quinoa":[14,6,64],"Musli bez cukru":[10,6,64],"Ryż basmati":[8,0.6,78],"Kasza manna":[11,1,73],"Granola słodzona":[9,15,68],"Tofu":[8,4,2],"Hummus":[8,16,14],"Edamame":[11,5,8.9],"Pistacje":[20,45,17],"Orzechy nerkowca":[18,44,26],"Pestki dyni":[30,46,10],"Masło orzechowe (100% orzechów)":[25,50,12],"Olej lniany":[0,100,0],"Margaryna":[0.2,80,0.5],"Olej kokosowy":[0,96,0],"Majonez":[1,75,2],"Popcorn bez dodatków":[12,4.5,74],"Frytki":[3.5,15,40],"Batonik czekoladowy":[5,22,65],"Lody":[3.5,11,23],"Krem czekoladowo-orzechowy":[6,31,57],"Miód":[0.3,0,80],"Herbata czarna":[0,0,0.3],"Herbata ziołowa":[0,0,0.2],"Woda gazowana":[0,0,0],"Sok pomidorowy":[0.8,0.1,3.5],"Napój sojowy bez cukru":[3.5,2,1.5],"Piwo":[0.4,0,3.6],"Napój energetyczny":[0,0,11],"Mąka pszenna":[10, 1, 73],"Bułka tarta":[12, 2, 72],"Koncentrat pomidorowy":[4, 0.5, 16],"Pomidory z puszki":[1.2, 0.2, 4]};
+function fm(x){return String(x).replace(".",",")}
+function mx(t,x){return'<span class="m'+t+'">'+x+'</span>'}
+var DRY=["Płatki owsiane","Kasza gryczana","Brązowy ryż","Makaron razowy","Biały ryż","Makaron pszenny","Soczewica","Ciecierzyca","Fasola","Kasza jaglana","Kasza jęczmienna","Quinoa","Ryż basmati","Kasza manna"],
+RAW=["Łosoś","Śledź","Pierś z kurczaka","Wołowina (chuda)","Wieprzowina","Boczek","Dorsz","Makrela","Pierś z indyka","Mięso mielone wieprzowo-wołowe"],
+ML=["Woda","Zielona herbata","Kawa czarna","Sok owocowy","Cola i napoje słodzone","Mleko","Kefir","Maślanka","Woda gazowana","Herbata czarna","Herbata ziołowa","Sok pomidorowy","Napój sojowy bez cukru","Piwo","Napój energetyczny"];
+function kc(n){if(!(n in KC))return"";var u=ML.indexOf(n)>=0?"100 ml":"100 g",t=DRY.indexOf(n)>=0?" (suche)":RAW.indexOf(n)>=0?" (surowe)":"";return'<span class="kc">'+KC[n]+" kcal / "+u+t+'</span><span class="kc mac">'+mx("w","białko "+fm(MAC[n][0])+" g")+mx("f","tłuszcze "+fm(MAC[n][1])+" g")+mx("c","węglowodany "+fm(MAC[n][2])+" g")+'</span>'}
+function col(s){var t=(s-1)/9,a,b,u;
+if(t<.5){a=[192,57,43];b=[224,165,38];u=t/.5}else{a=[224,165,38];b=[47,143,78];u=(t-.5)/.5}
+return "rgb("+a.map(function(x,i){return Math.round(x+(b[i]-x)*u)}).join(",")+")"}
+function esc(s){return s.replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+function row(d){return '<div class="row" tabindex="0" role="button" aria-expanded="false"><div class="name">'+esc(d[1])+kc(d[1])+'</div><div class="bar" role="img" aria-label="Ocena '+d[2]+' na 10"><b style="width:'+d[2]*10+'%;background:'+col(d[2])+'"></b></div><div class="score" style="border-color:'+col(d[2])+'">'+d[2]+'</div><div class="note">'+esc(d[3])+'</div>'+(SUB[d[1]]?'<div class="sub"><b>Zamiast tego:</b> '+esc(SUB[d[1]])+'</div>':'')+'</div>'}
+var view="produkty";
+function drawMode(){var m=document.getElementById("mode");m.innerHTML=[["produkty","🥕 Produkty"],["diety","🥗 Diety"],["bmi","⚖️ BMI"],["kalorie","🔥 Kalorie"]].map(function(v){return'<button type="button" aria-pressed="'+(view===v[0])+'">'+v[1]+'</button>'}).join("");Array.prototype.forEach.call(m.children,function(b,i){b.onclick=function(){view=["produkty","diety","bmi","kalorie"][i];drawMode();render()}})}
+function render(){var dv=view!=="produkty";["tools","scale"].forEach(function(c){document.querySelector("."+c).style.display=dv?"none":""});tabs.style.display=dv?"none":"";if(dv){view==="bmi"?renderBmi():view==="kalorie"?renderCal():renderDiets();return}
+var t=q.value.trim().toLowerCase(),s=sortEl.value;
+var items=D.filter(function(d){return(cur==="Wszystkie"||d[0]===cur)&&(!t||d[1].toLowerCase().indexOf(t)>=0)});
+if(!items.length){list.innerHTML='<p class="empty">Brak wyników. Spróbuj innej nazwy albo wybierz kategorię „Wszystkie”.</p>';return}
+if(s==="cat"){
+list.innerHTML=cats.map(function(c){var g=items.filter(function(d){return d[0]===c}).sort(function(a,b){return b[2]-a[2]});
+if(!g.length)return"";
+var avg=(g.reduce(function(a,d){return a+d[2]},0)/g.length).toFixed(1).replace(".",",");
+return"<section><h2><span>"+(EM[c]||"")+" "+esc(c)+"</span><small>średnia "+avg+"</small></h2>"+g.map(row).join("")+"</section>"}).join("")
+}else{
+var sorted=items.slice().sort(function(a,b){return s==="desc"?b[2]-a[2]:a[2]-b[2]});
+list.innerHTML="<section>"+sorted.map(function(d){return row([d[0]+": "+d[1],d[1],d[2],d[3]]).replace(esc(d[1]),esc(d[1])+' <small style="font-weight:400;color:var(--mut)">('+esc(d[0])+')</small>')}).join("")+"</section>"}}
+function drawTabs(){tabs.innerHTML=["Wszystkie"].concat(cats).map(function(c){return'<button type="button" data-c="'+esc(c)+'" aria-pressed="'+(c===cur)+'">'+(EM[c]||"🥗")+" "+esc(c)+'</button>'}).join("");
+Array.prototype.forEach.call(tabs.children,function(b){b.onclick=function(){cur=b.getAttribute("data-c");drawTabs();render()}})}
+q.oninput=render;sortEl.onchange=render;function tgl(r){r.classList.toggle("open");r.setAttribute("aria-expanded",r.classList.contains("open"))}
+list.onclick=function(e){var t=e.target;if(!t.closest||t.closest("details"))return;var r=t.closest(".row");if(r)tgl(r)};
+list.onkeydown=function(e){if(e.key!=="Enter"&&e.key!==" ")return;var r=e.target.closest&&e.target.closest(".row");if(r&&e.target===r){e.preventDefault();tgl(r)}};
+drawMode();drawTabs();render();
+</script>
+</body>
+</html>
